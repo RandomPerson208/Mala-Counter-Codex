@@ -1,4 +1,4 @@
-name: CI
+name: iOS CI
 
 on:
   push:
@@ -6,6 +6,7 @@ on:
       - main
       - master
   pull_request:
+  workflow_dispatch:
 
 jobs:
   validate:
@@ -29,3 +30,53 @@ jobs:
 
       - name: Sync Capacitor iOS project
         run: npm run sync:ios
+
+  build-simulator:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: macos-latest
+    needs: validate
+
+    env:
+      APP_NAME: MalaCounter
+      PROJECT_PATH: ios/App/App.xcodeproj
+      SCHEME: App
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Sync Capacitor iOS project
+        run: npm run sync:ios
+
+      - name: Build unsigned simulator app
+        run: |
+          xcodebuild \
+            -project "$PROJECT_PATH" \
+            -scheme "$SCHEME" \
+            -configuration Debug \
+            -sdk iphonesimulator \
+            -destination "generic/platform=iOS Simulator" \
+            -derivedDataPath "$RUNNER_TEMP/DerivedData" \
+            CODE_SIGNING_ALLOWED=NO \
+            build
+
+      - name: Package simulator app
+        run: |
+          cd "$RUNNER_TEMP/DerivedData/Build/Products/Debug-iphonesimulator"
+          ditto -c -k --sequesterRsrc --keepParent App.app "$RUNNER_TEMP/${APP_NAME}-simulator.zip"
+
+      - name: Upload simulator artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: mala-counter-simulator-app
+          path: ${{ runner.temp }}/${{ env.APP_NAME }}-simulator.zip
+          if-no-files-found: error
