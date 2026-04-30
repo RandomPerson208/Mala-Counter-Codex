@@ -1,56 +1,44 @@
-# Mala Counter App
-
+Mala Counter App
 A devotional mala counter app with a Radha Nila Madhava-inspired tap button, packaged for iPhone using Capacitor.
 
-## Repo structure
-
-- `www/` is the source of truth for the web app used by Capacitor.
-- `ios/` contains the generated native iPhone project.
-- `capacitor.config.json` contains the Capacitor app configuration.
-
-## Getting started
-
-```bash
+Repo structure
+www/ is the source of truth for the web app used by Capacitor.
+ios/ contains the generated native iPhone project.
+capacitor.config.json contains the Capacitor app configuration.
+Getting started
 cd /Users/riteshruparel/Documents/Codex/2026-04-30-code-me-a-mala-counter-app
 npm install
-```
-
-## iPhone workflow
-
+iPhone workflow
 Sync the latest web files into the iOS project:
 
-```bash
 npm run sync:ios
-```
-
 Open the iOS project in Xcode:
 
-```bash
 npm run open:ios
-```
-
 If that does not open automatically, use:
 
-`/Users/riteshruparel/Documents/Codex/2026-04-30-code-me-a-mala-counter-app/ios/App/App.xcodeproj`
+/Users/riteshruparel/Documents/Codex/2026-04-30-code-me-a-mala-counter-app/ios/App/App.xcodeproj
 
-## Exporting an `.ipa`
-
+Exporting an .ipa
 You need full Xcode plus Apple code signing set up on the Mac you are building from.
 
-1. Open `ios/App/App.xcodeproj` in Xcode.
-2. Select the `App` target.
-3. Set your Apple Developer team in `Signing & Capabilities`.
-4. Choose `Any iOS Device (arm64)` as the destination.
-5. Run `Product` -> `Archive`.
-6. In Organizer, use `Distribute App` to export the `.ipa`.
+Open ios/App/App.xcodeproj in Xcode.
+Select the App target.
+Set your Apple Developer team in Signing & Capabilities.
+Choose Any iOS Device (arm64) as the destination.
+Run Product -> Archive.
+In Organizer, use Distribute App to export the .ipa.
+Notes
+Edit app files inside www/.
+After web changes, run npm run sync:ios again before building in Xcode.
+This repo is organized for GitHub so generated dependency folders like node_modules/ stay out of version control.
+GitHub Actions is configured in .github/workflows/main.yml.
+Push and pull request runs validate the web app and sync the Capacitor iOS project.
+Manual workflow_dispatch runs build an unsigned iOS Simulator app, then upload it as the mala-counter-simulator-app artifact in the Actions run.
+GitHub Actions no-sign build
+No Apple signing secrets are required for the current workflow.
 
-## Notes
+Open GitHub Actions and run the iOS CI workflow manually. When it completes, download the mala-counter-simulator-app artifact from the run summary.
 
-- Edit app files inside `www/`.
-- After web changes, run `npm run sync:ios` again before building in Xcode.
-- This repo is organized for GitHub so generated dependency folders like `node_modules/` stay out of version control.
-- GitHub Actions is configured in `.github/workflows/main.yml` to install dependencies, syntax-check the app, and run Capacitor sync on pushes and pull requests.
-*** Delete File: /Users/riteshruparel/Documents/Codex/2026-04-30-code-me-a-mala-counter-app/index.html
-*** Delete File: /Users/riteshruparel/Documents/Codex/2026-04-30-code-me-a-mala-counter-app/script.js
-*** Delete File: /Users/riteshruparel/Documents/Codex/2026-04-30-code-me-a-mala-counter-app/styles.css
-*** Delete File: /Users/riteshruparel/Documents/Codex/2026-04-30-code-me-a-mala-counter-app/assets/radha-nila-madhava-button.png
+Important limitation
+An actual installable iPhone .ipa still requires Apple code signing. The current workflow avoids signing, so it produces a simulator build artifact instead of a signed .ipa.
