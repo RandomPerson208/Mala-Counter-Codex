@@ -1,0 +1,6 @@
+{
+  "appId": "com.codex.malacounter",
+  "appName": "Mala Counter",
+  "webDir": "www",
+  "bundledWebRuntime": false
+}
